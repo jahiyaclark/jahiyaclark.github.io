@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>cv — jahiya clark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #0e0e0c; --fg: #e8e4dc; --muted: #7a7670;
+    --accent: #d4a8b0; --border: rgba(232,228,220,0.1);
+    --serif: 'Cormorant Garamond', Georgia, serif;
+    --mono: 'DM Mono', monospace;
+  }
+  html { cursor: none; scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--fg); font-family: var(--serif); font-weight: 300; min-height: 100vh; overflow-x: hidden; }
+
+  #cursor { position: fixed; top: 0; left: 0; width: 10px; height: 10px; background: var(--accent); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); transition: width 0.2s, height 0.2s; mix-blend-mode: difference; }
+  #cursor-ring { position: fixed; top: 0; left: 0; width: 36px; height: 36px; border: 1px solid rgba(212,168,176,0.5); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: width 0.25s, height 0.25s, border-color 0.2s; }
+  body.hovering #cursor { width: 6px; height: 6px; }
+  body.hovering #cursor-ring { width: 56px; height: 56px; border-color: var(--accent); }
+
+  .site-wrap { max-width: 900px; margin: 0 auto; padding: 0 2.5rem; }
+
+  nav { padding: 2.5rem 0 1.5rem; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border); margin-bottom: 4rem; }
+  .nav-name { font-family: var(--mono); font-size: 11px; font-weight: 300; letter-spacing: 0.12em; color: var(--muted); text-decoration: none; text-transform: lowercase; transition: color 0.2s; }
+  .nav-name:hover { color: var(--fg); }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a { font-family: var(--mono); font-size: 10px; font-weight: 300; letter-spacing: 0.1em; color: var(--muted); text-decoration: none; text-transform: lowercase; transition: color 0.2s; position: relative; }
+  .nav-links a::after { content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 1px; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform 0.25s ease; }
+  .nav-links a:hover { color: var(--fg); }
+  .nav-links a:hover::after { transform: scaleX(1); }
+
+  /* ── cv header ── */
+  .cv-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 4rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .cv-header-left h1 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 300; letter-spacing: -0.01em; }
+  .cv-header-left h1 em { font-style: italic; color: var(--accent); }
+  .cv-header-left p { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--muted); margin-top: 8px; }
+  .cv-print-btn {
+    font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--muted); background: none;
+    border: 1px solid var(--border);
+    padding: 8px 16px; cursor: none;
+    transition: color 0.2s, border-color 0.2s;
+    text-decoration: none; display: inline-block;
+  }
+  .cv-print-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ── cv sections ── */
+  .cv-block {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 0 4rem;
+    padding: 2.5rem 0;
+    border-top: 1px solid var(--border);
+  }
+  .cv-block:last-of-type { border-bottom: 1px solid var(--border); }
+  .cv-block-label {
+    font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--accent); padding-top: 3px; line-height: 1.6;
+  }
+  .cv-block-entries { }
+  .cv-row {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    gap: 0 1.2rem;
+    margin-bottom: 1.6rem;
+    padding-bottom: 1.6rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .cv-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .cv-row-year { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 0.06em; padding-top: 3px; line-height: 1.6; }
+  .cv-row-content { }
+  .cv-row-title { font-size: 1.1rem; font-weight: 300; line-height: 1.45; color: var(--fg); }
+  .cv-row-title em { font-style: italic; }
+  .cv-row-sub { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 0.06em; margin-top: 3px; }
+  .cv-row-detail { font-size: 0.95rem; color: var(--muted); line-height: 1.65; margin-top: 6px; }
+  .cv-link { color: var(--accent); text-decoration: none; transition: opacity 0.2s; }
+  .cv-link:hover { opacity: 0.7; }
+
+  /* ── scroll reveal ── */
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.65s ease, transform 0.65s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  footer { border-top: 1px solid var(--border); padding: 2rem 0; margin-top: 4rem; display: flex; justify-content: space-between; align-items: center; }
+  .footer-name { font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; }
+  .footer-back { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+  .footer-back:hover { color: var(--accent); }
+
+  @media print {
+    html { cursor: auto; }
+    #cursor, #cursor-ring { display: none; }
+    nav, footer, .cv-print-btn { display: none; }
+    body { background: white; color: black; }
+    :root { --fg: #111; --muted: #555; --accent: #8a6068; --border: rgba(0,0,0,0.15); --bg: white; }
+    .site-wrap { max-width: 100%; padding: 2rem; }
+    .reveal { opacity: 1; transform: none; }
+    .cv-block { break-inside: avoid; }
+  }
+
+  @media (max-width: 640px) {
+    .site-wrap { padding: 0 1.2rem; }
+    nav { flex-direction: column; gap: 1rem; }
+    .cv-block { grid-template-columns: 1fr; gap: 1rem; }
+    .cv-header { flex-direction: column; gap: 1.5rem; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<div class="site-wrap">
+
+  <nav>
+    <a href="index.html" class="nav-name">jahiya clark</a>
+    <ul class="nav-links">
+      <li><a href="research.html">research</a></li>
+      <li><a href="index.html#publications">publications</a></li>
+      <li><a href="fieldnotes.html">field notes</a></li>
+      <li><a href="index.html#bio">bio & cv</a></li>
+    </ul>
+  </nav>
+
+  <div class="cv-header reveal">
+    <div class="cv-header-left">
+      <h1>Jahiya <em>Clark</em></h1>
+      <p>Conservation & Forest Ecologist · UC Santa Cruz · jahiyaclark.github.io</p>
+    </div>
+    <!-- This button triggers browser print — works great for saving as PDF too -->
+    <a href="#" class="cv-print-btn" onclick="window.print(); return false;">print / save pdf ↓</a>
+  </div>
+
+  <!-- ── EDUCATION ── -->
+  <div class="cv-block reveal">
+    <div class="cv-block-label">education</div>
+    <div class="cv-block-entries">
+      <div class="cv-row">
+        <div class="cv-row-year">2023–</div>
+        <div class="cv-row-content">
+          <div class="cv-row-title">Ph.D. Ecology &amp; Evolutionary Biology</div>
+          <div class="cv-row-sub">University of California, Santa Cruz</div>
+          <div class="cv-row-detail">Doris Duke Conservation Fellow. Conservation Science and Stewardship Lab, advisor: Dr. Erika Zavaleta.</div>
+        </div>
+      </div>
+      <div class="cv-row">
+        <div class="cv-row-year">2021–23</div>
+        <div class="cv-row-content">
+          <div class="cv-row-title">M.S. Environmental Conservation — Forest Resources and Arboriculture</div>
+          <div class="cv-row-sub">University of Massachusetts, Amherst</div>
+        </div>
+      </div>
+      <div class="cv-row">
+        <div class="cv-row-year">2020</div>
+        <div class="cv-row-content">
+          <div class="cv-row-title">B.A. Biology</div>
+          <div class="cv-row-sub">Mount Holyoke College, South Hadley, MA</div>
+        </div>
+      </div>
+      <div class="cv-row">
+        <div class="cv-row-year">2019</div>
+        <div class="cv-row-content">
+          <div class="cv-row-title">Study Abroad — Biology and Human Geography</div>
+          <div class="cv-row-sub">Queen Mary University of London, UK</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── RESEARCH & PROFESSIONAL EXPERIENCE ── -->
+  <div class="cv-block reveal">
+    <div class="cv-block-label">experience</div>
+    <div class="cv-block-entries">
+      <div class="cv-row">
+        <div class="cv-row-year">2023–</div>
+        <div class="cv-row-content">
+          <div class="cv-row-title">Doris Duke Conservation Fellow</div>
+          <div class="cv-row-sub">UC Santa Cruz</div>
+          <div class="cv-row-detail">Researching the ecological effects of Indigenous land tenure in northern Tanzania. Partnering with a local Maasai-led NGO on conservation measuring efforts among pastoralist communities.</div>
+        </div>
+      </div>
+      <div class="cv-row">
+        <div class="cv-row-year">2021–23</div>
+        <div class="cv-row-content">
+          <div class="cv-row-title">Fellow — Northeast Climate Adaptation Science Center</div>
+          <div class="cv-row-sub">UMass Amherst</div>
+          <div class="cv-row-detail">Assessed adaptive forest management strategies using a camera trap network to monitor biodiversity shifts in northern New England. Synthesized data on wildlife responses to climate-driven habitat changes.</div>
+        </div>
+      </div>
+      <div class="cv-row">
+        <div class="cv-row-year">2019</div>
+        <div class="cv-row-content">
+          <div class="cv-row-title">Summer Intern — Harvard Museum of Comparative Zoology</div>
+          <div class="cv-row-sub">Harvard University</div>
+          <div class="cv-row-detail">Investigated historical black carbon accumulation on bird specimens to assess pollution trends in New England. Led guided ornithology collection tours for museum visitors.</div>
+        </div>
+      </div>
+      <div class="cv-row">
+        <div class="cv-row-year">2018–20</div>
+        <div class="cv-row-content">
+          <div class="cv-row-title">Scholar — Doris Duke Conservation Scholars Program</div>
+          <div class="cv-row-sub">UC Santa Cruz</div>
+          <div class="cv-row-detail">Conducted rapid ecological research across five UC research stations and presented findings to conservation professionals.</div>
+        </div>
+      </div>
+      <div class="cv-row">
+        <div class="cv-row-year">2018–20</div>
+        <div class="cv-row-content">
+          <div class="cv-row-title">Eco-Representative — Miller Worley Center for the Environment</div>
+          <div class="cv-row-sub">Mount Holyoke College</div>
+          <div class="cv-row-detail">Led campus-wide sustainability initiatives including conservation campaigns and eco-orientations.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TRAINING & FIELD PROGRAMS ── -->
+  <div class="cv-block reveal">
+    <div class="cv-block-label">training & field</div>
+    <div class="cv-block-entries">
+      <div class="cv-row">
+        <div class="cv-row-year">2024</div>
+        <div class="cv-row-content">
+          <div class="cv-row-title">Complexity GAINs International School</div>
+          <div class="cv-row-sub">Ecological Persistence and Resilience — Sete, France</div>
+          <div class="cv-row-detail">Studied ecological persistence and resilience from the emergence of life to the Anthroposphere. Developed a two host-parasite resource model.</div>
+        </div>
+      </div>
+      <div class="cv-row">
+        <div class="cv-row-year">2024</div>
+        <div class="cv-row-content">
+          <div class="cv-row-title">Spectral Ecology Summer School</div>
+          <div class="cv-row-sub">Blacksburg, VA</div>
+          <div class="cv-row-detail">Ecological remote sensing using NEON AOP airborne products and academic leadership development.</div>
+        </div>
+      </div>
+      <div class="cv-row">
+        <div class="cv-row-year">2022</div>
+        <div class="cv-row-content">
+          <div class="cv-row-title">NSF IRES — Plant-Fungal Invasions in South Africa</div>
+          <div class="cv-row-sub">International Research Experience for Students</div>
+          <div class="cv-row-detail">Investigated genetic adaptation in invasive <em>Amanita muscaria</em>; contributed to submitted manuscript.</div>
+        </div>
+      </div>
+      <div class="cv-row">
+        <div class="cv-row-year">2019</div>
+        <div class="cv-row-content">
+          <div class="cv-row-title">Hampshire College Field Course — Chilean Patagonia</div>
+          <div class="cv-row-sub">Behavior of Marine &amp; Terrestrial Wildlife</div>
+          <div class="cv-row-detail">Conducted behavioral studies of marine and terrestrial wildlife in Patagonia.</div>
+        </div>
+      </div>
+      <div class="cv-row">
+        <div class="cv-row-year">2015</div>
+        <div class="cv-row-content">
+          <div class="cv-row-title">Rustic Pathways Volunteer Program</div>
+          <div class="cv-row-sub">Sea turtle conservation</div>
+          <div class="cv-row-detail">Built hatcheries for Olive Ridley sea turtles and engaged in conservation efforts.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PUBLICATIONS ── -->
+  <div class="cv-block reveal">
+    <div class="cv-block-label">publications</div>
+    <div class="cv-block-entries">
+      <div class="cv-row">
+        <div class="cv-row-year">2026</div>
+        <div class="cv-row-content">
+          <div class="cv-row-title">Equipped for success: Genomes and metabolomes of the European <em>Amanita muscaria</em> are conserved in its novel South African range</div>
+          <div class="cv-row-sub">Grant, N…Clark, J., et al. — accepted, New Phytologist</div>
+        </div>
+      </div>
+      <div class="cv-row">
+        <div class="cv-row-year">2025</div>
+        <div class="cv-row-content">
+          <div class="cv-row-title">SiMPL Wildlife Magnets: A Camera Trap Tool for Detecting All Creatures Great and Small</div>
+          <div class="cv-row-sub">Clark, J., Sirén, A.P., Loesberg, J., &amp; Morelli, T.L. — Ecology and Evolution, 15(12)</div>
+        </div>
+      </div>
+      <div class="cv-row">
+        <div class="cv-row-year">2023</div>
+        <div class="cv-row-content">
+          <div class="cv-row-title">Women in Wildlife Science: Building Equity, Diversity, and Inclusion</div>
+          <div class="cv-row-sub">Morelli, T.L., &amp; Clark, J. — Prairie Naturalist, 55</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FUNDING ── -->
+  <div class="cv-block reveal">
+    <div class="cv-block-label">funding</div>
+    <div class="cv-block-entries">
+      <div class="cv-row">
+        <div class="cv-row-year">2023–</div>
+        <div class="cv-row-content">
+          <div class="cv-row-title">UCSC Doris Duke PhD Fellowship</div>
+        </div>
+      </div>
+      <div class="cv-row">
+        <div class="cv-row-year">2023–</div>
+        <div class="cv-row-content">
+          <div class="cv-row-title">Doane Environmental Endowed Scholarship</div>
+          <div class="cv-row-sub">Santa Cruz Community Foundation</div>
+        </div>
+      </div>
+      <div class="cv-row">
+        <div class="cv-row-year">2025</div>
+        <div class="cv-row-content">
+          <div class="cv-row-title">UCSC Graduate School Travel Grant</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PRESS ── -->
+  <div class="cv-block reveal">
+    <div class="cv-block-label">press</div>
+    <div class="cv-block-entries">
+      <div class="cv-row">
+        <div class="cv-row-year">2023</div>
+        <div class="cv-row-content">
+          <div class="cv-row-title"><a href="https://www.providencejournal.com/story/news/2023/01/12/new-england-animal-species-impacted-climate-change-warm-winter-no-snow/69780911007/" class="cv-link">"New England animal species impacted by climate change, warm winter, no snow"</a></div>
+          <div class="cv-row-sub">Providence Journal</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SKILLS ── -->
+  <div class="cv-block reveal">
+    <div class="cv-block-label">skills</div>
+    <div class="cv-block-entries">
+      <div class="cv-row">
+        <div class="cv-row-year">software</div>
+        <div class="cv-row-content">
+          <div class="cv-row-title">R, Python, ArcGIS, QGIS, FME, JMP, Google Earth Engine, Microsoft Office</div>
+        </div>
+      </div>
+      <div class="cv-row">
+        <div class="cv-row-year">other</div>
+        <div class="cv-row-content">
+          <div class="cv-row-title">FAA Remote Pilot Certified (drone operator)</div>
+        </div>
+      </div>
+      <div class="cv-row">
+        <div class="cv-row-year">language</div>
+        <div class="cv-row-content">
+          <div class="cv-row-title">Intermediate French</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="reveal">
+    <div class="footer-name">Jahiya Clark · Curriculum Vitae</div>
+    <a href="index.html" class="footer-back">← back to about</a>
+  </footer>
+
+</div>
+
+<script>
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let ringX = 0, ringY = 0, mouseX = 0, mouseY = 0;
+  document.addEventListener('mousemove', e => {
+    mouseX = e.clientX; mouseY = e.clientY;
+    cursor.style.left = mouseX + 'px'; cursor.style.top = mouseY + 'px';
+  });
+  function animateRing() {
+    ringX += (mouseX - ringX) * 0.12; ringY += (mouseY - ringY) * 0.12;
+    ring.style.left = ringX + 'px'; ring.style.top = ringY + 'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+    el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+  });
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.08 });
+  reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>jahiya clark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0e0e0c;
+    --fg: #e8e4dc;
+    --muted: #7a7670;
+    --accent: #d4a8b0;
+    --border: rgba(232, 228, 220, 0.1);
+    --serif: 'Cormorant Garamond', Georgia, serif;
+    --mono: 'DM Mono', monospace;
+  }
+
+  html { cursor: none; scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--serif);
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── custom cursor ── */
+  #cursor {
+    position: fixed;
+    top: 0; left: 0;
+    width: 10px; height: 10px;
+    background: var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: width 0.2s, height 0.2s, background 0.2s;
+    mix-blend-mode: difference;
+  }
+  #cursor-ring {
+    position: fixed;
+    top: 0; left: 0;
+    width: 36px; height: 36px;
+    border: 1px solid rgba(181, 201, 161, 0.5);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.12s ease-out, width 0.25s, height 0.25s, border-color 0.2s;
+  }
+  body.hovering #cursor { width: 6px; height: 6px; }
+  body.hovering #cursor-ring { width: 56px; height: 56px; border-color: var(--accent); }
+
+  /* ── layout ── */
+  .site-wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 2.5rem;
+  }
+
+  /* ── nav ── */
+  nav {
+    padding: 2.5rem 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1.5rem;
+    margin-bottom: 4rem;
+  }
+  .nav-name {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    text-transform: lowercase;
+  }
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+  .nav-links a {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    text-decoration: none;
+    text-transform: lowercase;
+    transition: color 0.2s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0; right: 0;
+    height: 1px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s ease;
+  }
+  .nav-links a:hover { color: var(--fg); }
+  .nav-links a:hover::after { transform: scaleX(1); }
+
+  /* ── hero ── */
+  .hero {
+    margin-bottom: 5rem;
+  }
+  .hero-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+  }
+  .hero-statement {
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-weight: 300;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    max-width: 720px;
+  }
+  .hero-statement em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  /* ── photo placeholder ── */
+  .photo-block {
+    width: 100%;
+    height: 420px;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: flex-end;
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 4rem;
+    position: relative;
+    overflow: hidden;
+    background: #161612;
+  }
+  .photo-block img {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    opacity: 0.7;
+  }
+  .photo-caption {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    position: relative;
+    z-index: 1;
+  }
+  .photo-placeholder-text {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    text-align: center;
+    line-height: 2;
+  }
+
+  /* ── bio ── */
+  .bio {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 4rem;
+    margin-bottom: 5rem;
+    padding-bottom: 5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .bio-side {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    text-transform: lowercase;
+    padding-top: 6px;
+  }
+  .bio-text p {
+    font-size: 1.2rem;
+    line-height: 1.85;
+    font-weight: 300;
+    color: var(--fg);
+    margin-bottom: 1.4rem;
+    opacity: 0.9;
+  }
+  .bio-profile-img {
+    width: 100%;
+    margin-top: 2.5rem;
+    border: 1px solid var(--border);
+    display: block;
+    opacity: 0.85; /* Matches the mood/opacity of your main header image */
+    transition: opacity 0.3s ease;
+  }
+  .bio-profile-img:hover {
+    opacity: 1;
+  }
+  .bio-text p:last-child { margin-bottom: 0; }
+
+  /* ── cv grid ── */
+  .cv-section {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 2rem 4rem;
+    padding-bottom: 3rem;
+    margin-bottom: 3rem;
+    border-bottom: 1px solid var(--border);
+    align-items: start;
+  }
+  .cv-section:last-child { border-bottom: none; }
+  .cv-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+    text-transform: uppercase;
+    padding-top: 4px;
+    line-height: 1.6;
+  }
+  .cv-entries { }
+  .cv-entry {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 0 1.2rem;
+    margin-bottom: 1.4rem;
+    padding-bottom: 1.4rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .cv-entry:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .cv-year {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    padding-top: 3px;
+    line-height: 1.6;
+  }
+  .cv-title {
+    font-size: 1.05rem;
+    font-weight: 300;
+    line-height: 1.5;
+    color: var(--fg);
+  }
+  .cv-sub {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    margin-top: 3px;
+  }
+  .cv-link {
+    color: var(--accent);
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+  .cv-link:hover { opacity: 0.7; }
+
+  /* ── contact ── */
+  .contact-row {
+    display: flex;
+    gap: 3rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+  }
+  .contact-row a {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .contact-row a:hover { color: var(--accent); }
+  .contact-row a::before { content: '↗'; font-size: 10px; }
+
+  /* ── footer ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem 0;
+    margin-top: 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-name {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  .footer-status {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+  .footer-status span {
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    margin-right: 6px;
+    animation: pulse 2.5s ease-in-out infinite;
+    vertical-align: middle;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* ── entrance animations ── */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(24px);
+    animation: fadeUp 0.7s ease forwards;
+  }
+  .fade-up:nth-child(1) { animation-delay: 0.05s; }
+  .fade-up:nth-child(2) { animation-delay: 0.15s; }
+  .fade-up:nth-child(3) { animation-delay: 0.25s; }
+  .fade-up:nth-child(4) { animation-delay: 0.35s; }
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── scroll reveal ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.65s ease, transform 0.65s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── hover photo float ── */
+  #hover-photo {
+    position: fixed;
+    pointer-events: none;
+    z-index: 8000;
+    width: 220px;
+    height: 160px;
+    opacity: 0;
+    transform: translate(-50%, -110%) scale(0.92) rotate(-1.5deg);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    background: #161612;
+  }
+  #hover-photo.visible {
+    opacity: 1;
+    transform: translate(-50%, -110%) scale(1) rotate(-1.5deg);
+  }
+  #hover-photo img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    opacity: 0.85;
+    display: block;
+  }
+  #hover-photo .hover-caption {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 6px 10px;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    background: linear-gradient(transparent, rgba(14,14,12,0.85));
+  }
+  #hover-photo .hover-placeholder {
+    width: 100%; height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 9px;
+    color: #3a3a36;
+    letter-spacing: 0.08em;
+    text-align: center;
+    line-height: 1.8;
+    padding: 1rem;
+  }
+  .has-photo:hover .cv-title { color: var(--accent); }
+  .has-photo:hover .cv-sub { color: var(--fg); }
+
+  /* ── cv download link ── */
+  .cv-download-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 1.8rem;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 3px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .cv-download-link:hover { color: var(--accent); border-color: var(--accent); }
+  .cv-download-arrow { font-size: 12px; transition: transform 0.2s; }
+  .cv-download-link:hover .cv-download-arrow { transform: translate(2px, -2px); }
+
+  /* ── coming soon section anchors ── */
+  .section-anchor { margin-bottom: 3rem; }
+  .section-coming {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 2rem 4rem;
+    padding: 2.5rem 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .section-coming-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+    text-transform: uppercase;
+    padding-top: 4px;
+  }
+  .section-coming-text {
+    font-size: 1rem;
+    color: var(--muted);
+    font-style: italic;
+    line-height: 1.7;
+  }
+
+  @media (max-width: 640px) {
+    .site-wrap { padding: 0 1.2rem; }
+    nav { flex-direction: column; gap: 1rem; }
+    .bio { grid-template-columns: 1fr; gap: 1.5rem; }
+    .cv-section { grid-template-columns: 1fr; gap: 1rem; }
+    .hero-statement { font-size: 2rem; }
+    .photo-block { height: 280px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- Floating hover photo — appears near cursor. Add data-photo="yourfile.jpg" and data-caption="location" to any .cv-entry -->
+<div id="hover-photo">
+  <div class="hover-placeholder" id="hover-placeholder">→ swap in your photo<br>(see code comments)</div>
+  <img id="hover-img" src="" alt="" style="display:none;">
+  <div class="hover-caption" id="hover-cap"></div>
+</div>
+
+<div class="site-wrap">
+
+  <nav class="fade-up">
+    <div class="nav-name">jahiya clark</div>
+    <ul class="nav-links">
+      <li><a href="research.html">research</a></li>
+      <li><a href="#publications">publications</a></li>
+      <li><a href="fieldnotes.html">field notes</a></li>
+      <li><a href="#bio">bio & cv</a></li>
+    </ul>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-label fade-up">conservation & forest ecologist</div>
+    <h1 class="hero-statement fade-up">
+      Jahiya P.R.M. Clark <em>investigates how people and the environment intersect</em> — through climate, technology, and the long memory of land.
+    </h1>
+  </section>
+
+  <div class="photo-block fade-up">
+    <img src="trees in yaeda.jpg" alt="Yaeda Valley, Tanzania"> 
+    <div class="Lake Eyasi">
+      <span style="color:#3a3a36" </span>
+    </div>
+    <div class="photo-caption"> Lake Eyasi, Tanzania — 2025</div>
+  </div>
+
+  <div class="bio reveal" id="bio">
+    <div class="bio-side">
+      about ✦
+      <img src="Jahiya_Tanzania.JPG" alt="Jahiya Clark" class="bio-profile-img">
+    </div>
+    <div class="bio-text">
+      <p>Jahiya Clark is a conservation and forest ecologist pursuing a Ph.D. in Ecology and Evolutionary Biology at UC Santa Cruz, where she works in the Conservation Science and Stewardship Lab under Dr. Erika Zavaleta as a Doris Duke Fellow.</p>
+      <p>Her research spans climate adaptation science, land management and usage, natural history and collections, and remote sensing and GIS. Her master's research analyzed how adaptive forest management and climate change shape forest mammal occupancy across northern New England.</p>
+      <p class="has-photo" data-photo="Jahiya_Tanzania.JPG" data-caption="Tanzania field research" style="cursor:none;">She is currently conducting a scoping review on the recorded ecological effects of Indigenous land tenure among Maasai, Chagga, Sonjo, Datoga, and Hadza peoples in Tanzania.</p>
+      <p>Jahiya is based in Santa Cruz, California.</p>
+      <a href="cv.html" class="cv-download-link">
+        <span>full cv</span>
+        <span class="cv-download-arrow">↗</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="cv-section reveal">
+    <div class="cv-label">education</div>
+    <div class="cv-entries">
+      <div class="cv-entry">
+        <div class="cv-year">2023–</div>
+        <div>
+          <div class="cv-title">Ph.D. Ecology &amp; Evolutionary Biology</div>
+          <div class="cv-sub">University of California, Santa Cruz, CA</div>
+        </div>
+      </div>
+      <div class="cv-entry">
+        <div class="cv-year">2021–23</div>
+        <div>
+          <div class="cv-title">M.S. Environmental Conservation</div>
+          <div class="cv-sub">University of Massachusetts, Amherst, MA</div>
+        </div>
+      </div>
+        <div class= "cv-entry">
+        <div class="cv-year">2016–20</div>
+        <div>
+          <div class="cv-title">B.A. Biology and Anthropology </div>
+          <div class="cv-sub">Mount Holyoke College, South Hadley, MA</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cv-section reveal">
+    <div class="cv-label">fellowships &amp; awards</div>
+    <div class="cv-entries">
+      <div class="cv-entry">
+        <div class="cv-year">2023</div>
+        <div>
+          <div class="cv-title">Doris Duke Conservation Fellow</div>
+          <div class="cv-sub">Conservation Science and Stewardship Lab</div>
+        </div>
+      </div>
+      <div class="cv-entry">
+        <div class="cv-year">2021</div>
+        <div>
+          <div class="cv-title"><a href="https://necasc.umass.edu/people/jahiya-clark" class="cv-link">Adaptive Silviculture for Wildlife</a></div>
+          <div class="cv-sub">NECASC, UMass Amherst</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cv-section reveal" id="publications">
+    <div class="cv-label">publications</div>
+    <div class="cv-entries">
+      <div class="cv-entry">
+        <div class="cv-year">2023</div>
+        <div>
+          <div class="cv-title"><a href="https://www.eaglehill.us/prna-pdfs-regular/prna-55/book-reviews/BR009.pdf" class="cv-link">Women in Wildlife Science: Building Equity, Diversity, and Inclusion</div>
+          <div class="cv-sub">Prairie Naturalist, 55 — with T.L. Morelli</div>
+        </div>
+      </div>
+      <div class="cv-entry">
+        <div class="cv-year">2025</div>
+        <div>
+          <div class="cv-title" ><a href=" https://doi.org/10.1002/ece3.72342" class="cv-link">SiMPL Wildlife Magnets: A Camera Trap Tool for Detecting All Creatures Great and Small</div>
+          <div class="cv-sub">Clark, J., Sirén, A.P., Loesberg, J., &amp; Morelli, T.L. — Ecology and Evolution, 15(12), 2025</div>
+        </div>
+      </div>
+      <div class="cv-entry">
+        <div class="cv-year">2026</div>
+        <div>
+          <div class="cv-title"><a href=" https://doi.org/10.1111/nph.71064" class="cv-link">Equipped for success: genomes and metabolomes of the European <em>Amanita muscaria  </em> are conserved in its novel South African range.</div>
+          <div class="cv-sub">Grant, N…Clark, J., et al. (2026). New Phytol, 250: 1863-1883.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cv-section reveal">
+    <div class="cv-label">teaching</div>
+    <div class="cv-entries">
+       <div class="cv-entry">
+        <div class="cv-year">2026</div>
+        <div>
+          <div class="cv-title">Ecology (BIO107)</div>
+          <div class="cv-sub">UC Santa Cruz — teaching assistant, Winter Quarter</div>
+        </div>
+      </div>
+      <div class="cv-entry">
+        <div class="cv-year">2025</div>
+        <div>
+          <div class="cv-title">Evolution (BIO109)</div>
+          <div class="cv-sub">UC Santa Cruz — teaching assistant, Winter Quarter</div>
+        </div>
+      </div>
+      <div class="cv-entry">
+        <div class="cv-year">2023</div>
+        <div>
+          <div class="cv-title">Forests and People</div>
+          <div class="cv-sub">UMass Amherst — teaching assistant, Spring Semester</div>
+        </div>
+      </div>
+      <div class="cv-entry">
+        <div class="cv-year">2019</div>
+        <div>
+          <div class="cv-title">Environmental Entrepreneurship</div>
+          <div class="cv-sub">Mount Holyoke College — teaching assistant, Spring Semester</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cv-section reveal">
+    <div class="cv-label">press</div>
+    <div class="cv-entries">
+      <div class="cv-entry">
+        <div class="cv-year">2023</div>
+        <div>
+          <div class="cv-title"><a href="https://www.providencejournal.com/story/news/2023/01/12/new-england-animal-species-impacted-climate-change-warm-winter-no-snow/69780911007/" class="cv-link">"New England animal species impacted by climate change, warm winter, no snow"</a></div>
+          <div class="cv-sub">Providence Journal</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cv-section reveal">
+    <div class="cv-label">contact</div>
+    <div>
+      <div class="contact-row">
+        <a href="https://github.com/jahiyaclark">GitHub</a>
+        <a href="https://www.linkedin.com/in/jahiya-clark-314357135/">LinkedIn</a>
+        <a href="https://twitter.com/greentree_jai">X / Twitter</a>
+        <a href="mailto:jclark17@ucsc.edu">Email</a>
+      </div>
+    </div>
+  </div>
+
+  <footer class="reveal">
+    <div class="footer-name">Jahiya Clark · UC Santa Cruz</div>
+    <div class="footer-status"><span></span>PhD candidate, 2026</div>
+  </footer>
+
+</div>
+
+<script>
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let ringX = 0, ringY = 0, mouseX = 0, mouseY = 0;
+
+  document.addEventListener('mousemove', e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    cursor.style.left = mouseX + 'px';
+    cursor.style.top = mouseY + 'px';
+  });
+
+  function animateRing() {
+    ringX += (mouseX - ringX) * 0.12;
+    ringY += (mouseY - ringY) * 0.12;
+    ring.style.left = ringX + 'px';
+    ring.style.top = ringY + 'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+    el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+  });
+
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+
+  // ── hover photo logic ──
+  const hoverPhoto = document.getElementById('hover-photo');
+  const hoverImg = document.getElementById('hover-img');
+  const hoverCap = document.getElementById('hover-cap');
+  const hoverPlaceholder = document.getElementById('hover-placeholder');
+  let photoX = 0, photoY = 0, targetX = 0, targetY = 0;
+  let photoVisible = false;
+
+  function animatePhoto() {
+    if (photoVisible) {
+      photoX += (targetX - photoX) * 0.1;
+      photoY += (targetY - photoY) * 0.1;
+      hoverPhoto.style.left = photoX + 'px';
+      hoverPhoto.style.top = photoY + 'px';
+    }
+    requestAnimationFrame(animatePhoto);
+  }
+  animatePhoto();
+
+  document.addEventListener('mousemove', e => {
+    targetX = e.clientX;
+    targetY = e.clientY - 20;
+  });
+
+  document.querySelectorAll('.has-photo').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      const src = el.dataset.photo;
+      const cap = el.dataset.caption || '';
+
+      if (src && src.trim() !== '') {
+        hoverImg.src = src;
+        hoverImg.style.display = 'block';
+        hoverPlaceholder.style.display = 'none';
+      } else {
+        hoverImg.style.display = 'none';
+        hoverPlaceholder.style.display = 'flex';
+        // Show which photo slot this is
+        hoverPlaceholder.innerHTML = '→ add a photo here<br><span style="color:#555;font-size:8px">' + (cap || 'data-photo="yourfile.jpg"') + '</span>';
+      }
+      hoverCap.textContent = cap;
+      photoVisible = true;
+      hoverPhoto.classList.add('visible');
+    });
+
+    el.addEventListener('mouseleave', () => {
+      photoVisible = false;
+      hoverPhoto.classList.remove('visible');
+    });
+  });
+</script>
+</body>
+</html>
